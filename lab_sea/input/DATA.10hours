@@ -144,6 +144,13 @@
  bathyFile       = 'bathy.labsea',
  hydrogThetaFile = 'LevCli_temp.labsea',
  hydrogSaltFile  = 'LevCli_salt.labsea',
+ zonalWindFile   = ' ',
+ meridWindFile   = ' ',
+ EmPmRFile       = ' ',
+ surfQFile       = ' ',
+ surfQswFile     = ' ',
+ thetaClimFile   = ' ',
+ saltClimFile    = 'SSS.labsea'
  &
 
 # Open-boundaries
