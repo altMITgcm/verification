@@ -6,8 +6,6 @@
 #
 #  EH3 initial version 2003-08
 
-# DISABLE="kpp gmredi obcs aim_v23"
-# ENABLE=aim
 
-NOOPTFILES='aim_do_atmos_physics.F'
+DISABLE="aim kpp shap_filt obcs zonal_filt"
 
