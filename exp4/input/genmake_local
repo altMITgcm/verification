@@ -6,6 +6,6 @@
 #
 #  EH3 initial version 2003-08
 
-DISABLE="aim aim_v23"
 
-ENABLE=
+DISABLE="aim kpp gmredi shap_filt zonal_filt"
+
