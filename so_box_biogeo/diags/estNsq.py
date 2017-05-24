@@ -1,11 +1,12 @@
 import numpy as np
 from MITgcmutils import rdmds, densjmd95
-from hspython import loadgrid
+from mitgcmgrid import loadgrid
 import matplotlib.pyplot as plt
 """
-    Estimating Brunt-Vaisala frequency using T and S
+    Estimating Brunt-Vaisala frequency using T and S.
     In case when N$^2$ is needed but do not have 'DRHODR' saved, 
-    one can still estimate it using T and S
+    one can still estimate it using T and S, 
+    and the appropriate equation of state.
 """
 #
 # Constants
@@ -16,19 +17,19 @@ g = 9.81
 # Load grid files
 # (hspython is available at https://github.com/hajsong/hspython)
 #
-grd = loadgrid('so_box', varname=['XC','YC','RC','hFacC','DRC','RF'])
+grd = loadgrid('../results', varname=['XC','YC','RC','hFacC','DRC','RF'])
 [nz, ny, nx] = grd.hFacC.shape
 #
 # Compute the stratification frequency using DRHODR. 
-# It is defined at the center of the layer.
+# It is defined at the center of the level.
 #
 dRHOdr = rdmds('ocestrat', 9, rec=0);    # DRHODR is in the first record in "ocestrat"
 Nsq = - dRHOdr*g/rhoconst*grd.mskC
 #
 # Now, estimate Nsq using T and S. 
-# When computing "drhodr" at the layer interface, density at upper and lower cell 
-# is computed using the pressure at the interface. 
-# Nsq is defined at the layer interface.
+# When computing "drhodr" at the interface between tracer cells,
+# density at upper and lower cell is computed using the pressure at the interface. 
+# Nsq is defined at the interface.
 #
 T = rdmds('dynDiag', 9, rec=2)    # THETA is in the third record in "dynDiag"
 S = rdmds('dynDiag', 9, rec=3)    # SALT is in the fourth record in "dynDiag"
@@ -58,18 +59,22 @@ showz = 5
 showx = 5
 scale = 1e5
 
-X, Y = np.meshgrid(grd.YC[:, 0], grd.RC[:showz])
+Y, Z = np.meshgrid(grd.YC[:, 0], grd.RC[:showz])
 
 f, ax = plt.subplots(1, 3, figsize=(16, 4))
 
-im = ax[0].contourf(X, Y, Nsq[:showz, :, showx]*scale, np.arange(0, 15.1 , 1), cmap='Reds')
+im = ax[0].contourf(Y, Z, Nsq[:showz, :, showx]*scale, np.arange(0, 15.1 , 1), cmap='Reds')
 cb = plt.clabel(im,colors='black',fmt='%3.1f')
 ax[0].set_title('N$^2$ from DRHODR [x 10$^5$ s$^{-1}$]', color='black', fontsize=15)
+ax[0].set_xlabel('latitude')
+ax[0].set_ylabel('depth [m]')
 
-im = ax[1].contourf(X, Y, Nsq_TS[:showz,:,showx]*scale, np.arange(0,15.1,1), cmap='Reds')
+im = ax[1].contourf(Y, Z, Nsq_TS[:showz,:,showx]*scale, np.arange(0,15.1,1), cmap='Reds')
 cb = plt.clabel(im,colors='black',fmt='%3.1f')
 ax[1].set_title('N$^2$ from T and S [x 10$^5$ s$^{-1}$]', color='black', fontsize=15)
+ax[1].set_xlabel('latitude')
 
-im = ax[2].contourf(X, Y, Nsq_ra[:showz,:,showx]*scale, np.arange(0,15.1,1), cmap='Reds')
+im = ax[2].contourf(Y, Z, Nsq_ra[:showz,:,showx]*scale, np.arange(0,15.1,1), cmap='Reds')
 cb = plt.clabel(im,colors='black',fmt='%3.1f')
 ax[2].set_title('N$^2$, from RHOAnoma [x 10$^5$ s$^{-1}$]', color='black', fontsize=15)
+ax[2].set_xlabel('latitude')
